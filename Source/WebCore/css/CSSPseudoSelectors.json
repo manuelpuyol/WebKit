@@ -208,6 +208,9 @@
         "read-write": {},
         "required": {},
         "root": {},
+        "same-path-link": {
+            "argument": "optional"
+        },
         "scope": {},
         "seeking": {
             "conditional": "ENABLE(VIDEO)"
