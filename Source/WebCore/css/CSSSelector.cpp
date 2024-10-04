@@ -185,6 +185,7 @@ SelectorSpecificity simpleSelectorSpecificity(const CSSSelector& simpleSelector,
             return 0;
         case CSSSelector::PseudoClass::NthChild:
         case CSSSelector::PseudoClass::NthLastChild:
+        case CSSSelector::PseudoClass::SameLinkPath:
         case CSSSelector::PseudoClass::Host:
             return SelectorSpecificityIncrement::ClassB + maxSpecificity(simpleSelector.selectorList());
         default:
@@ -524,6 +525,13 @@ String CSSSelector::selectorText(StringView separator, StringView rightSide) con
                 builder.append(')');
                 break;
             }
+            case PseudoClass::SameLinkPath:
+                if (selector->hasSegment()) {
+                    builder.append('(');
+                    builder.append(selector->segment());
+                    builder.append(')');
+                }
+                break;
             case PseudoClass::State:
                 builder.append('(');
                 serializeIdentifier(selector->argument(), builder);
@@ -731,6 +739,24 @@ void CSSSelector::setNth(int a, int b)
     createRareData();
     m_data.rareData->a = a;
     m_data.rareData->b = b;
+}
+
+void CSSSelector::setSegment(int a)
+{
+    createRareData();
+    m_data.rareData->segment = a;
+}
+
+bool CSSSelector::hasSegment() const
+{
+    ASSERT(m_hasRareData);
+    return m_data.rareData->segment >= 0;
+}
+
+int CSSSelector::segment() const
+{
+    ASSERT(m_hasRareData);
+    return m_data.rareData->segment;
 }
 
 bool CSSSelector::matchNth(int count) const

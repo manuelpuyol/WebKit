@@ -208,7 +208,7 @@
         "read-write": {},
         "required": {},
         "root": {},
-        "same-path-link": {
+        "same-link-path": {
             "argument": "optional"
         },
         "scope": {},

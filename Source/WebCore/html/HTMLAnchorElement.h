@@ -56,6 +56,8 @@ public:
     WEBCORE_EXPORT URL href() const;
     void setHref(const AtomString&);
 
+    bool linkPathMatchesDocument(int segments) const;
+
     const AtomString& name() const;
 
     WEBCORE_EXPORT String origin() const;
@@ -70,7 +72,7 @@ public:
     bool willRespondToMouseClickEventsWithEditability(Editability) const final;
 
     bool hasRel(Relation) const;
-    
+
     inline SharedStringHash visitedLinkHash() const;
 
     WEBCORE_EXPORT DOMTokenList& relList();

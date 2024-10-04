@@ -80,6 +80,7 @@ public:
     void setLangList(FixedVector<PossiblyQuotedIdentifier>);
     void setSelectorList(std::unique_ptr<CSSSelectorList>);
 
+    void setSegment(int a) { m_selector->setSegment(a); };
     void setImplicit() { m_selector->setImplicit(); }
 
     CSSSelector::PseudoClass pseudoClass() const { return m_selector->pseudoClass(); }

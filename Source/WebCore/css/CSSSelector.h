@@ -151,6 +151,9 @@ public:
     int nthA() const;
     int nthB() const;
 
+    int segment() const;
+    bool hasSegment() const;
+
     bool hasDescendantRelation() const { return relation() == Relation::DescendantSpace; }
     bool hasDescendantOrChildRelation() const { return relation() == Relation::Child || hasDescendantRelation(); }
 
@@ -186,6 +189,7 @@ private:
     void setValue(const AtomString&, bool matchLowerCase = false);
 
     void setAttribute(const QualifiedName&, AttributeMatchType);
+    void setSegment(int a);
     void setNth(int a, int b);
     void setArgument(const AtomString&);
     void setArgumentList(FixedVector<AtomString>);
@@ -240,6 +244,7 @@ private:
 
         int a { 0 }; // Used for :nth-*
         int b { 0 }; // Used for :nth-*
+        int segment { -1 }; // Used for :same-link-path
         QualifiedName attribute; // used for attribute selector
         AtomString argument; // Used for :contains and :nth-*
         FixedVector<AtomString> argumentList; // Used for :active-view-transition-type, ::highlight, ::view-transition-{group, image-pair, new, old}, ::part arguments.

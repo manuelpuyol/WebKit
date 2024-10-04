@@ -37,6 +37,7 @@
 #include "ElementRareData.h"
 #include "ElementTraversal.h"
 #include "FrameSelection.h"
+#include "HTMLAnchorElement.h"
 #include "HTMLDocument.h"
 #include "HTMLNames.h"
 #include "HTMLSlotElement.h"
@@ -1012,6 +1013,12 @@ bool SelectorChecker::checkOne(CheckingContext& checkingContext, LocalContext& c
             return isAutofilledStrongPassword(element);
         case CSSSelector::PseudoClass::WebKitAutofillStrongPasswordViewable:
             return isAutofilledStrongPasswordViewable(element);
+        case CSSSelector::PseudoClass::SameLinkPath: {
+            if (auto* anchor = dynamicDowncast<HTMLAnchorElement>(element)) {
+                return anchor->linkPathMatchesDocument(selector.segment());
+            }
+            return false;
+        }
         case CSSSelector::PseudoClass::AnyLink:
         case CSSSelector::PseudoClass::Link:
             // :visited and :link matches are separated later when applying the style. Here both classes match all links...
