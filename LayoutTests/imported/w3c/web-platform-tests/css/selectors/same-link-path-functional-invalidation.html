@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Same Path Link Functional Selector - Invalidation</title>
+    <link rel="author" title="Keith Cirkel" href="mailto:wpt@keithcirkel.co.uk"/>
+    <link rel="help" href="https://drafts.csswg.org/selectors-5/#local-pseudo"/>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <style>
+      a {
+        color: blue;
+        border-color: blue;
+        outline-color: blue;
+      }
+      :same-link-path(1) {
+        outline-color: rgb(0, 255, 0);
+      }
+      :same-link-path(2) {
+        border-color: rgb(0, 255, 0);
+      }
+      :same-link-path(3) {
+        color: rgb(0, 255, 0);
+      }
+    </style>
+    <a id="myLink" href="">This should be green</a>
+    <script>
+    test(function (t) {
+      const originalHref = myLink.href;
+      t.add_cleanup(() => {
+        myLink.href = originalHref;
+      });
+      assert_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)');
+      assert_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)');
+      assert_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)');
+      myLink.href="./";
+      assert_not_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)', "myLink invalidated same-link-path(3)");
+      assert_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)', "myLink still valid for same-link-path(2)");
+      assert_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)', "myLink still valid for same-link-path(1)");
+      myLink.href="../";
+      assert_not_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)', "myLink invalidated same-link-path(3)");
+      assert_not_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)', "myLink still valid for same-link-path(2)");
+      assert_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)', "myLink still valid for same-link-path(1)");
+      myLink.href="/";
+      assert_not_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)', "myLink invalidated same-link-path(3)");
+      assert_not_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(2)");
+      assert_not_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(1)");
+      myLink.href="";
+      assert_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(3)");
+      assert_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(2)");
+      assert_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(1)");
+    }, "invalidation occurs when setting href");
+    test(function (t) {
+      const originalHref = myLink.href;
+      t.add_cleanup(() => {
+        myLink.href = originalHref;
+      });
+      assert_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)');
+      assert_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)');
+      assert_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)');
+      myLink.setAttribute('href', "./");
+      assert_not_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)', "myLink invalidated same-link-path(3)");
+      assert_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)', "myLink still valid for same-link-path(2)");
+      assert_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)', "myLink still valid for same-link-path(1)");
+      myLink.setAttribute('href', "../");
+      assert_not_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)', "myLink invalidated same-link-path(3)");
+      assert_not_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)', "myLink still valid for same-link-path(2)");
+      assert_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)', "myLink still valid for same-link-path(1)");
+      myLink.setAttribute('href', "/");
+      assert_not_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)', "myLink invalidated same-link-path(3)");
+      assert_not_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(2)");
+      assert_not_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(1)");
+      myLink.setAttribute('href', "");
+      assert_equals(getComputedStyle(myLink).color, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(3)");
+      assert_equals(getComputedStyle(myLink).borderColor, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(2)");
+      assert_equals(getComputedStyle(myLink).outlineColor, 'rgb(0, 255, 0)', "myLink invalidated for same-link-path(1)");
+    }, "invalidation occurs when setAttribute('href')");
+    </script>
+  </body>
+</html>

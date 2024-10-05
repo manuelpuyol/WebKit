@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Same Path Link Functional Selector - 2 path segments</title>
+    <link rel="author" title="Keith Cirkel" href="mailto:wpt@keithcirkel.co.uk"/>
+    <link rel="help" href="https://drafts.csswg.org/selectors-5/#local-pseudo"/>
+  </head>
+  <body>
+    <style>
+      a {
+        color: blue;
+      }
+      :same-link-path(2) {
+        color: green;
+      }
+    </style>
+    <a href="">This should be green</a>
+    <a href="./">This should be green</a>
+    <a href="#">This should be green</a>
+    <a href="/css/selectors/same-link-path-functional-2.html">This should be green</a>
+    <a href="?">This should be green</a>
+    <a href="?foo=bar">This should be green</a>
+    <a href="/css/selectors">This should be green</a>
+    <a href="/css/selectors/same-link-path.html">This should be green</a>
+    <a href="../">This should be blue</a>
+    <a href="../../">This should be blue</a>
+    <a href="/css/css-scoping/">This should be blue</a>
+    <a href="/css">This should be blue</a>
+    <a href="/">This should be blue</a>
+  </body>
+</html>
