@@ -638,7 +638,7 @@ void compileSelector(CompiledSelector& compiledSelector, const CSSSelector* sele
         compiledSelector.status = SelectorCompilationStatus::CannotCompile;
         return;
     }
-    
+
     SelectorCodeGenerator codeGenerator(selector, selectorContext);
     compiledSelector.status = codeGenerator.compile(compiledSelector.codeRef);
 
@@ -1221,6 +1221,7 @@ static inline FunctionType addPseudoClassType(const CSSSelector& selector, Selec
     case CSSSelector::PseudoClass::LastOfType:
     case CSSSelector::PseudoClass::OnlyOfType:
     case CSSSelector::PseudoClass::NthOfType:
+    case CSSSelector::PseudoClass::SameLinkPath:
     case CSSSelector::PseudoClass::NthLastOfType:
     case CSSSelector::PseudoClass::WebKitDrag:
     case CSSSelector::PseudoClass::Has:
@@ -4297,7 +4298,7 @@ void SelectorCodeGenerator::generateElementIsNthLastChildOf(Assembler::JumpList&
     // The initial element must match the selector list.
     for (const NthChildOfSelectorInfo& nthLastChildOfSelectorInfo : fragment.nthLastChildOfFilters)
         generateElementMatchesSelectorList(failureCases, elementAddressRegister, nthLastChildOfSelectorInfo.selectorList);
-    
+
     auto validSubsetFilters = WTF::compactMap(fragment.nthLastChildOfFilters, [](auto& nthLastChildOfSelectorInfo) -> std::optional<const NthChildOfSelectorInfo*> {
         if (nthFilterIsAlwaysSatisified(nthLastChildOfSelectorInfo.a, nthLastChildOfSelectorInfo.b))
             return std::nullopt;

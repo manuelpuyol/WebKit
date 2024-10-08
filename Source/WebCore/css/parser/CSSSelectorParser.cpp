@@ -304,7 +304,7 @@ static OptionSet<CompoundSelectorFlag> extractCompoundFlags(const MutableCSSSele
 {
     if (simpleSelector.match() != CSSSelector::Match::PseudoElement)
         return { };
-    
+
     // FIXME: https://bugs.webkit.org/show_bug.cgi?id=161747
     // The UASheetMode check is a work-around to allow this selector in mediaControls(New).css:
     // input[type="range" i]::-webkit-media-slider-container > div {
@@ -397,11 +397,11 @@ std::unique_ptr<MutableCSSSelector> CSSSelectorParser::consumeRelativeNestedSele
 {
     auto scopeCombinator = consumeCombinator(range);
 
-    // Nesting should only work with ~ > + combinators in this function. 
+    // Nesting should only work with ~ > + combinators in this function.
     // The descendant combinator is handled in another code path.
     if (scopeCombinator != CSSSelector::Relation::DirectAdjacent && scopeCombinator != CSSSelector::Relation::IndirectAdjacent && scopeCombinator != CSSSelector::Relation::Child)
         return nullptr;
-    
+
     auto selector = consumeComplexSelector(range);
     if (!selector)
         return nullptr;
@@ -568,7 +568,7 @@ std::unique_ptr<MutableCSSSelector> CSSSelectorParser::consumeCompoundSelector(C
         }
         if (namespaceURI == defaultNamespace())
             namespacePrefix = nullAtom();
-        
+
         return makeUnique<MutableCSSSelector>(QualifiedName(namespacePrefix, elementName, namespaceURI));
     }
     prependTypeSelectorIfNeeded(namespacePrefix, elementName, *compoundSelector);
@@ -685,7 +685,7 @@ std::unique_ptr<MutableCSSSelector> CSSSelectorParser::consumeNesting(CSSParserT
 
     auto selector = makeUnique<MutableCSSSelector>();
     selector->setMatch(CSSSelector::Match::NestingParent);
-    
+
     return selector;
 }
 
@@ -789,6 +789,13 @@ std::unique_ptr<MutableCSSSelector> CSSSelectorParser::consumePseudo(CSSParserTo
             selector->setSelectorList(makeUnique<CSSSelectorList>(WTFMove(selectorList)));
             return selector;
         }
+        case CSSSelector::PseudoClass::SameLinkPath: {
+            const CSSParserToken& token = block.consumeIncludingWhitespace();
+            if (token.type() != NumberToken || token.numericValueType() != IntegerValueType || token.numericSign() != NoSign || !block.atEnd())
+                return nullptr;
+            selector->setSegment(token.numericValue());
+            return selector;
+        }
         case CSSSelector::PseudoClass::NthChild:
         case CSSSelector::PseudoClass::NthLastChild:
         case CSSSelector::PseudoClass::NthOfType:
@@ -883,7 +890,7 @@ std::unique_ptr<MutableCSSSelector> CSSSelectorParser::consumePseudo(CSSParserTo
             break;
         }
     }
-    
+
     if (selector->match() == CSSSelector::Match::PseudoElement) {
         switch (selector->pseudoElement()) {
 #if ENABLE(VIDEO)
@@ -1156,7 +1163,7 @@ const AtomString& CSSSelectorParser::determineNamespace(const AtomString& prefix
 void CSSSelectorParser::prependTypeSelectorIfNeeded(const AtomString& namespacePrefix, const AtomString& elementName, MutableCSSSelector& compoundSelector)
 {
     bool isShadowDOM = compoundSelector.needsImplicitShadowCombinatorForMatching();
-    
+
     if (elementName.isNull() && defaultNamespace() == starAtom() && !isShadowDOM)
         return;
 

@@ -142,7 +142,7 @@ bool HTMLAnchorElement::isKeyboardFocusable(KeyboardEvent* event) const
 {
     if (!isFocusable())
         return false;
-    
+
     // Anchor is focusable if the base element supports focus and is focusable.
     if (isFocusable() && Element::supportsFocus())
         return HTMLElement::isKeyboardFocusable(event);
@@ -222,14 +222,14 @@ void HTMLAnchorElement::setActive(bool down, Style::InvalidationScope invalidati
             if (down && document().frame() && document().frame()->selection().selection().rootEditableElement() == rootEditableElement())
                 return;
             break;
-        
+
         case EditableLinkBehavior::NeverLive:
         case EditableLinkBehavior::OnlyLiveWithShiftKey:
             return;
 
         }
     }
-    
+
     HTMLElement::setActive(down, invalidationScope);
 }
 
@@ -284,6 +284,65 @@ bool HTMLAnchorElement::draggable() const
     if (equalLettersIgnoringASCIICase(value, "false"_s))
         return false;
     return hasAttributeWithoutSynchronization(hrefAttr);
+}
+
+
+static Vector<StringView> linkPathParts(const URL url, int segmentsToMatch)
+{
+    auto paths = url.path().split('/');
+    Vector<StringView> result;
+    int i = 0;
+
+    for (StringView path : paths) {
+        if (i == segmentsToMatch)
+            break;
+        result.append(path);
+        i++;
+    }
+
+    return result;
+}
+
+static bool linkAndDocumentSegmentsMatch(const URL href, const URL documentURL, int segmentsToMatch)
+{
+    if (!href.hasPath() || !documentURL.hasPath())
+        return false;
+
+    auto documentParts = linkPathParts(documentURL, segmentsToMatch);
+    if (static_cast<int>(documentParts.size()) < segmentsToMatch)
+        return false;
+
+    auto elementParts = linkPathParts(href, segmentsToMatch);
+    if (static_cast<int>(elementParts.size()) < segmentsToMatch)
+        return false;
+
+    for (auto i = 0; i < segmentsToMatch; i++) {
+        if(documentParts[i] != elementParts[i])
+            return false;
+    }
+
+    return true;
+}
+
+bool HTMLAnchorElement::linkPathMatchesDocument(int segments) const
+{
+    auto url = href();
+    if (url.isEmpty())
+        return false;
+
+    auto documentURL = document().url();
+
+    if (!protocolHostAndPortAreEqual(url, documentURL))
+        return false;
+
+    if (segments == 0)
+        return true;
+
+    if (segments > 0) {
+        return linkAndDocumentSegmentsMatch(url, documentURL, segments);
+    }
+
+    return equalIgnoringFragmentIdentifier(url, documentURL);
 }
 
 URL HTMLAnchorElement::href() const
@@ -514,7 +573,7 @@ std::optional<PrivateClickMeasurement> HTMLAnchorElement::parsePrivateClickMeasu
         protectedDocument()->addConsoleMessage(MessageSource::Other, MessageLevel::Warning, "attributionsourceid is not a non-negative integer which is required for Private Click Measurement."_s);
         return std::nullopt;
     }
-    
+
     if (attributionSourceID.value() > std::numeric_limits<uint8_t>::max()) {
         protectedDocument()->addConsoleMessage(MessageSource::Other, MessageLevel::Warning, makeString("attributionsourceid must have a non-negative value less than or equal to "_s, std::numeric_limits<uint8_t>::max(), " for Private Click Measurement."_s));
         return std::nullopt;
@@ -628,7 +687,7 @@ void HTMLAnchorElement::handleClick(Event& event)
     // A matching triggering event needs to happen before an attribution report can be sent.
     // Thus, URLs should be empty for now.
     ASSERT(!privateClickMeasurement || (privateClickMeasurement->attributionReportClickSourceURL().isNull() && privateClickMeasurement->attributionReportClickDestinationURL().isNull()));
-    
+
     frame->checkedLoader()->changeLocation(completedURL, effectiveTarget, &event, referrerPolicy, document->shouldOpenExternalURLsPolicyToPropagate(), newFrameOpenerPolicy, downloadAttribute, WTFMove(privateClickMeasurement));
 
     sendPings(completedURL);

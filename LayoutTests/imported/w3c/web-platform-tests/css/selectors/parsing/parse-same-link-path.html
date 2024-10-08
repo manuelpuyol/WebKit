@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Selectors: same-link-path selectors</title>
+<link rel="author" title="Keith Cirkel" href="mailto:wpt@keithcirkel.co.uk"/>
+<link rel="help" href="https://drafts.csswg.org/selectors-5/#local-pseudo"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script>
+  test_valid_selector(':same-link-path');
+  test_valid_selector(':same-link-path(0)');
+  test_valid_selector(':same-link-path(1)');
+  test_valid_selector(':same-link-path(2)');
+  test_invalid_selector(':same-link-path(+1)');
+  test_invalid_selector(':same-link-path(-1)');
+  test_invalid_selector(':same-link-path(1.0)');
+  test_invalid_selector(':same-link-path(foo)');
+  test_invalid_selector(':same-link-path(*)');
+  test_invalid_selector(':same-link-path(#i)');
+  test_invalid_selector(':same-link-path(');
+  test_invalid_selector(':same-link-path(calc(1 - 1))');
+  test_invalid_selector(':same-link-path(--foo)');
+  test_invalid_selector(':same-link-path(1, 1)');
+  test_invalid_selector(':same-link-path(1 1)');
+  test_invalid_selector(':same-link-path(1em)');
+</script>
